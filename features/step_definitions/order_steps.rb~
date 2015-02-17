@@ -1,0 +1,8 @@
+Given(/^I that I am on the homepage$/) do
+  visit 'https://www.dominos.com'
+end
+Then(/^Dominos homepage loads$/) do
+  click_link('id-of-link')
+And(/^I click Order link$/) do
+  click_link('id-of-link')
+end

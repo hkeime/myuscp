@@ -1,0 +1,13 @@
+Feature: Order Dominos Pizzas
+
+Scenario: Navigate to the order online page from dominos homepage
+Given that I am on the home page
+When I click Order Online link
+Then the Order page displays
+
+
+Scenario: Select delivery Store
+
+Scenario: Order multiple Pizzas
+
+Scenario: Verify Check out page loads
