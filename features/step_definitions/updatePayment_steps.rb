@@ -27,23 +27,52 @@ Then(/^the log in page loads$/) do
   expect(page).to have_selector('main.login')
 end
 
-When(/^I enter "(.*?)" in the email field$/) do |email|
+def standardLogIn(email="", password="")
   fill_in('username', :with => email)
-end
-
-When(/^I enter "(.*?)" in the password field$/) do |password|
   fill_in('password', :with => password)
-end
-
-When(/^I click log in button on SAM form$/) do
   find('main.login div.page form fieldset.bottomButtons button.primary.left.last').click
 end
 
-Then(/^I should see "(.*?)"$/) do |modal_class|
-  expect(page).to have_css(modal_class)
+#Scenario Outline
+When(/^I log in with "(.*?)" and "(.*?)"$/) do |email,password|
+  standardLogIn(email,password)
 end
 
-Then(/^I can click log out button$/) do
+Then(/^Logins with "(.*?)" should "(.*?)"$/) do |payment_status, show_modal|
+  if payment_status=='expired'or'lastpaymentfailed' and show_modal=='yes'
+    expect(page).to have_css('div.expired-card-modal-wrapper')
+  else
+    expect(page).not_to have_css('div.expired-card-modal-wrapper')
+  end
+end
+
+And(/^I can log out$/) do
   find('.site-nav-firefly-span').hover
   find('a.ff-logout-btn.sam-returns').click
+end
+
+#s2
+When(/^Update Your Payment Information modal loads$/) do
+  #expect(page).to have_css('div.expired-card-modal-wrapper')
+  within("div.expired-card-modal-wrapper") do
+    find_link('Update payment information')
+  end
+end
+
+When(/^I click "(.*?)" link$/) do |link|
+  find('a.cc-payment-button').click if link=='update your payment information'
+  find('.cc-remind-later-link').click if link=='remind me later'
+end
+
+Then(/^The SAM Change Your Payment page displays$/) do
+  #require 'debug'
+  #expect(page).to have_content 'Change your payment information'
+  find("legend", :text => "Payment Information")
+  #expect(find('[name=form-payment-information]'))
+end
+
+#s3
+
+Then(/^modal window closes$/) do
+  pending # express the regexp above with the code you wish you had
 end

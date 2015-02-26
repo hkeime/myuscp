@@ -12,13 +12,27 @@ When The homepage loads
 And I click Log in in pushdown
 Then the log in page loads
 
-Scenario Outline: Update Payment modal after log in
-    When I enter "<email>" in the email field
-    When I enter "<password>" in the password field
-    And I click log in button on SAM form
-    Then I should see "<modal_class>"
-    And I can click log out button
+@s1
+Scenario Outline: Update Payment modal for expired or payment failed accounts
+  When I log in with "<email>" and "<password>"
+  Then Logins with "<payment_status>" should "<show_modal>"
+  And  I can log out
 Examples:
-      | email                        | password    |  modal_class                       |
-      | DC4834301@mailinator.com     | New1111     |  div.expired-card-modal-wrapper                      |
-      | DC2753260@mailinator.com     | New1111     |  div.expired-card-modal-wrapper    |
+      | payment_status       |  email                        | password    |  show_modal               |
+      | expired              |  DC4834301@mailinator.com     | New1111     |  yes                      |
+      | lastpaymentfailed    |  DC2753260@mailinator.com     | New1111     |  yes                      |
+      | nullexp              |  DC15022302@mailinator.com    | New1111     |  no                       |
+      | futureexp            |  DC15022302@mailinator.com    | New1111     |  no                       |
+      | lastpaymentnotfailed |  DC15022302@mailinator.com    | New1111     |  no                       |
+@s2
+Scenario: Update Payment links to SAM page
+  When I log in with "DC4834301@mailinator.com" and "New1111"
+  Then Update Your Payment Information modal loads
+  When I click "update your payment information" link
+  Then The SAM Change Your Payment page displays
+@s3
+Scenario: Remind me Later closes modal
+  When I log in with "DC4834301@mailinator.com" and "New1111"
+  Then Update Your Payment Information modal loads
+  When I click "remind me later" link
+  Then modal window closes
