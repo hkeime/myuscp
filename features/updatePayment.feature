@@ -8,15 +8,15 @@ User whose card is not expired and has not failed does not get modal
 Background:
 Given I have no browser cookies
 And I am on the USCP home page
-When The homepage loads
-And I click Log in in pushdown
+Then The homepage loads
+When I click Log in in pushdown
 Then the log in page loads
 
 @s1
 Scenario Outline: Update Payment modal for expired or payment failed accounts
   When I log in with "<email>" and "<password>"
   Then Logins with "<payment_status>" should "<show_modal>"
-  And  I can log out
+  And I log out
 Examples:
       | payment_status       |  email                        | password    |  show_modal               |
       | expired              |  DC4834301@mailinator.com     | New1111     |  yes                      |
@@ -27,12 +27,22 @@ Examples:
 @s2
 Scenario: Update Payment links to SAM page
   When I log in with "DC4834301@mailinator.com" and "New1111"
-  Then Update Your Payment Information modal loads
+  Then Update Your Payment Information modal displays
   When I click "update your payment information" link
-  Then The SAM Change Your Payment page displays
+  Then Update Your Payment Information modal does not display
+  And A new window for the SAM Change Your Payment page opens
+  When I am on the USCP home page
+  Then I log out
+  When I click Log in in pushdown
+  Then the log in page loads
+  When I log in with "DC4834301@mailinator.com" and "New1111"
+  Then Update Your Payment Information modal does not display
+  And I log out
+
+
 @s3
 Scenario: Remind me Later closes modal
-  When I log in with "DC4834301@mailinator.com" and "New1111"
-  Then Update Your Payment Information modal loads
+  When I log in with "DC2753260@mailinator.com" and "New1111"
+  Then Update Your Payment Information modal displays
   When I click "remind me later" link
-  Then modal window closes
+  Then Update Your Payment Information modal does not display

@@ -3,7 +3,7 @@ browser = Capybara.current_session.driver.browser
 browser.manage.delete_all_cookies
 end
 
-And(/^I am on the USCP home page$/) do
+When(/^I am on the USCP home page$/) do
   visit 'http://ux-preprod-app.democratandchronicle.com/'
   #visit 'http://hh-ux-stage.democratandchronicle.com/'
   #visit 'http://www-stage.democratandchronicle.com/'
@@ -11,7 +11,7 @@ And(/^I am on the USCP home page$/) do
   #visit ui_url('/')
 end
 
-When (/^The homepage loads$/) do
+Then (/^The homepage loads$/) do
   expect(page).to have_selector('#section_home')
   expect(page).to have_selector('.site-footer-logo')
 end
@@ -46,33 +46,32 @@ Then(/^Logins with "(.*?)" should "(.*?)"$/) do |payment_status, show_modal|
   end
 end
 
-And(/^I can log out$/) do
+Then(/^I log out$/) do
   find('.site-nav-firefly-span').hover
   find('a.ff-logout-btn.sam-returns').click
 end
 
-#s2
-When(/^Update Your Payment Information modal loads$/) do
+#s2 and s3
+When(/^Update Your Payment Information modal displays$/) do
   #expect(page).to have_css('div.expired-card-modal-wrapper')
+  #require 'debug'
   within("div.expired-card-modal-wrapper") do
     find_link('Update payment information')
   end
 end
 
 When(/^I click "(.*?)" link$/) do |link|
-  find('a.cc-payment-button').click if link=='update your payment information'
-  find('.cc-remind-later-link').click if link=='remind me later'
+  find('a.cc-payment-button').click if link=='update your payment information' #Click button in modal to update your payment info
+  find('.cc-remind-later-link').click if link=='remind me later' #Click link in modal for remind me later"
 end
 
-Then(/^The SAM Change Your Payment page displays$/) do
-  #require 'debug'
-  #expect(page).to have_content 'Change your payment information'
-  find("legend", :text => "Payment Information")
-  #expect(find('[name=form-payment-information]'))
+Then(/^A new window for the SAM Change Your Payment page opens$/) do
+  new_window = page.driver.browser.window_handles.last    #window handle to the new window
+  page.driver.browser.switch_to.window new_window         #switch control to the new window
+  expect(current_url).to match 'https://account-stage.democratandchronicle.com/payment-information/?licenseId=10232320' #new modal window URL matches expected URL            #Probably not required for a modal window
 end
 
-#s3
 
-Then(/^modal window closes$/) do
-  pending # express the regexp above with the code you wish you had
+Then(/^Update Your Payment Information modal does not display$/) do
+    expect(page).not_to have_css('div.expired-card-modal-wrapper')  #modal window no longer displays
 end
